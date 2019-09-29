@@ -1,17 +1,12 @@
 package io.github.benkoff.webrtcss.controller;
 
 import io.github.benkoff.webrtcss.domain.Room;
-import io.github.benkoff.webrtcss.domain.RoomService;
-import io.github.benkoff.webrtcss.util.Parser;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,19 +18,15 @@ import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 @WebAppConfiguration
 public class MainControllerTest {
-    @Autowired private WebApplicationContext webApplicationContext;
-    @Autowired private RoomService service;
-    @Autowired private Parser parser;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+    @Autowired
+    private MainService mainService;
     private MainController controller;
     private MockMvc mockMvc;
 
@@ -45,9 +36,9 @@ public class MainControllerTest {
     private Room expectedRoom;
     private MultiValueMap<String, String> map;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        controller = new MainController(service, parser);
+        controller = new MainController(mainService);
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(webApplicationContext)
                 .build();
@@ -90,7 +81,7 @@ public class MainControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(model().attribute("rooms",
                         Matchers.hasItem(
-                                Matchers.<Room> hasProperty("id",
+                                Matchers.<Room>hasProperty("id",
                                         Matchers.equalTo(expectedId)))));
     }
 
@@ -105,7 +96,7 @@ public class MainControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(model().attribute("rooms",
                         Matchers.hasItem(
-                                Matchers.<Room> hasProperty("id",
+                                Matchers.<Room>hasProperty("id",
                                         Matchers.equalTo(expectedId)))));
     }
 
@@ -121,18 +112,13 @@ public class MainControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(model().attribute("rooms",
                         Matchers.hasItem(
-                                Matchers.<Room> hasProperty("id",
+                                Matchers.<Room>hasProperty("id",
                                         Matchers.equalTo(expectedId)))))
                 .andExpect(model().attribute("rooms",
                         Matchers.not(
                                 Matchers.hasItem(
-                                        Matchers.<Room> hasProperty("id",
+                                        Matchers.<Room>hasProperty("id",
                                                 Matchers.equalTo(invalidValue))))));
-    }
-
-    @Test
-    public void shouldReturnMainView_whenProcessRoomExit() throws Exception {
-        //TODO
     }
 
     @Repeat(10)

@@ -4,14 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.github.benkoff.webrtcss.domain.Room;
 import io.github.benkoff.webrtcss.domain.RoomService;
-import io.github.benkoff.webrtcss.domain.WebSocketMessage;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import io.github.benkoff.webrtcss.domain.MessageFrame;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -22,18 +20,18 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
 public class SignalHandlerTest {
-    @Autowired private RoomService service;
-    @Autowired private SignalHandler handler;
+    @Autowired
+    private RoomService service;
+    @Autowired private WebRTCSignalHandler handler;
 
     private String name;
     private WebSocketSession session;
     private Room room;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Long id = 1L;
         name = UUID.randomUUID().toString();
@@ -45,19 +43,9 @@ public class SignalHandlerTest {
     @Test
     public void shouldRemoveClient_whenConnectionClosed() throws Exception {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        WebSocketMessage message = new WebSocketMessage(
-                name,
-                "join",
-                room.getId().toString(),
-                null,
-                null);
+        MessageFrame message = new MessageFrame(name,"join", room.getId().toString(), null, null);
         handler.handleTextMessage(session, new TextMessage(ow.writeValueAsString(message)));
-        message = new WebSocketMessage(
-                name,
-                "leave",
-                room.getId().toString(),
-                null,
-                null);
+        message = new MessageFrame(name, "leave", room.getId().toString(), null, null);
         handler.handleTextMessage(session, new TextMessage(ow.writeValueAsString(message)));
         handler.afterConnectionClosed(session, CloseStatus.NORMAL);
 
@@ -65,7 +53,7 @@ public class SignalHandlerTest {
                 .isEmpty();
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         name = null;
         session = null;

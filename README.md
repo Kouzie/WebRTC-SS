@@ -70,3 +70,12 @@ Method |      URI           |  Description
 * https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#websocket
 * https://keyholesoftware.com/2017/04/10/websockets-with-spring-boot/
 * https://www.baeldung.com/websockets-spring
+
+# install keystore 
+
+```
+$ keytool -genkey -alias spring -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 4000
+# password set 123456
+```
+
+> connect url: https://localhost:8080/ (using firefox)

@@ -2,16 +2,13 @@ package io.github.benkoff.webrtcss.service;
 
 import io.github.benkoff.webrtcss.domain.Room;
 import io.github.benkoff.webrtcss.domain.RoomService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
 public class RoomServiceTest {

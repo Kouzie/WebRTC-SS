@@ -3,17 +3,12 @@ package io.github.benkoff.webrtcss.domain;
 import io.github.benkoff.webrtcss.util.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.reactive.socket.WebSocketSession;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Service
-public class RoomService {
+public class RoomService {    
     private final Parser parser;
     // repository substitution since this is a very simple realization
     private final Set<Room> rooms = new TreeSet<>(Comparator.comparing(Room::getId));
@@ -34,6 +29,10 @@ public class RoomService {
         return rooms.add(room);
     }
 
+    public Boolean removeRoom(final Room room) {
+        return rooms.remove(room);
+    }
+
     public Optional<Room> findRoomByStringId(final String sid) {
         // simple get() because of parser errors handling
         return rooms.stream().filter(r -> r.getId().equals(parser.parseId(sid).get())).findAny();
@@ -43,17 +42,17 @@ public class RoomService {
         return room.getId();
     }
 
-    public Map<String, WebSocketSession> getClients(final Room room) {
+    public List<String> getClients(final Room room) {
         return Optional.ofNullable(room)
-                .map(r -> Collections.unmodifiableMap(r.getClients()))
-                .orElse(Collections.emptyMap());
+                .map(r -> Collections.unmodifiableList(r.getClients()))
+                .orElse(Collections.emptyList());
     }
 
-    public WebSocketSession addClient(final Room room, final String name, final WebSocketSession session) {
-        return room.getClients().put(name, session);
+    public void addClient(final Room room, final String sessionId) {
+        room.getClients().add(sessionId);
     }
 
-    public WebSocketSession removeClientByName(final Room room, final String name) {
-        return room.getClients().remove(name);
+    public void removeClientByName(final Room room, final String sessionId) {
+        room.getClients().remove(sessionId);
     }
 }
